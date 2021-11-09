@@ -1,0 +1,29 @@
+[
+    {
+        "number": "INC0000060",
+        "short_description": "Unable to connect to email",
+        "sys_id": "01",
+        "assignment_group": {
+            "link": "https://dev01010.service-now.com/api/now/table/sys_user_group/8a4dde73c6112278017a6a4baf547aa6",
+            "value": "8a4dde73c6112278017a6a4baf547aa6"
+        }
+    },
+    {
+        "number": "INC0000009",
+        "short_description": "Reset my password",
+        "sys_id": "02",
+        "assignment_group": {
+            "link": "https://dev01010.service-now.com/api/now/table/sys_user_group/8a4dde73c6112278017a6a4baf547aa7",
+            "value": "8a4dde73c6112278017a6a4baf547aa7"
+        }
+    },
+    {
+        "number": "INC0009005",
+        "short_description": "Issue with email",
+        "sys_id": "03",
+        "assignment_group": {
+            "link": "https://dev01010.service-now.com/api/now/table/sys_user_group/8a4dde73c6112278017a6a4baf547ab7",
+            "value": "8a4dde73c6112278017a6a4baf547ab7"
+        }
+    }
+]
