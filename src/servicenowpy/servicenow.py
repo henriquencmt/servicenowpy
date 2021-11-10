@@ -78,32 +78,146 @@ class Table:
                 break
         return result
 
-    def get_record(self, sys_id, api_version=None, headers={"Accept":"application/json"}, verbose=False, **kwargs):
+    def get_record(
+        self,
+        sys_id: str,
+        api_version=None,
+        headers={"Accept":"application/json"},
+        verbose=False,
+        **kwargs
+    ):
         url = self.make_url(api_version, sys_id, **kwargs)
+        if verbose:
+            print(url)
+
+        session = self.get_session(headers)
+        response = session.get(url)
+        self.check_status_code(response)
+
+        return response.json()['result']
+
+    def get_record_by_number(
+        self,
+        number: str,
+        api_version=None,
+        headers={"Accept":"application/json"},
+        verbose=False,
+        **kwargs
+    ):
+        url = self.make_url(api_version, **kwargs)
+        operator = '&' if kwargs else '?'
+        url += f'{operator}number={number}'
+        if verbose:
+            print(url)
+
+        session = self.get_session(headers)
+        response = session.get(url)
+        self.check_status_code(response)
+
+        return response.json()['result']
+
+    def patch(
+        self,
+        sys_id: str,
+        data: str,
+        api_version=None,
+        headers={"Accept":"application/json","Accept":"application/json"},
+        verbose=False,
+        **kwargs
+    ):
+        """
+        Sends a PATCH request to the instance table.
+
+        :param api_version: API version (if API versioning is enabled).
+        :param **kwargs: All query parameters to the URL.
+        """
+
+        url = self.make_url(api_version, sys_id=sys_id, **kwargs)
         if verbose:
             print(url)
         session = self.get_session(headers)
 
-        response = session.get(url)
+        response = session.patch(url, data)
         self.check_status_code(response)
 
-        data = response.json()
-        return data['result']
+        result = response.json()
+        return result['result']
 
-    def get_record_by_number(self):
-        pass
+    def post(
+        self,
+        data: str,
+        api_version=None,
+        headers={"Accept":"application/json","Accept":"application/json"},
+        verbose=False,
+        **kwargs
+    ):
+        """
+        Sends a POST request to the instance table.
 
-    def patch(self):
-        pass
+        :param api_version: API version (if API versioning is enabled).
+        :param **kwargs: All query parameters to the URL.
+        """
 
-    def post(self):
-        pass
+        url = self.make_url(api_version, **kwargs)
+        if verbose:
+            print(url)
+        session = self.get_session(headers)
 
-    def put(self):
-        pass
+        response = session.post(url, data)
+        self.check_status_code(response, 201)
 
-    def delete(self):
-        pass
+        return response.json()['result']
+
+    def put(
+        self,
+        sys_id: str,
+        data: str,
+        api_version=None,
+        headers={"Accept":"application/json","Accept":"application/json"},
+        verbose=False,
+        **kwargs
+    ):
+        """
+        Sends a PUT request to the instance table.
+
+        :param api_version: API version (if API versioning is enabled).
+        :param **kwargs: All query parameters to the URL.
+        """
+
+        url = self.make_url(api_version, sys_id=sys_id, **kwargs)
+        if verbose:
+            print(url)
+        session = self.get_session(headers)
+
+        response = session.put(url, data)
+        self.check_status_code(response)
+
+        result = response.json()
+        return result['result']
+
+    def delete(
+        self,
+        sys_id: str,
+        api_version=None,
+        headers={"Accept":"application/json","Accept":"application/json"},
+        verbose=False,
+        **kwargs
+    ):
+        """
+        Sends a DELETE request to the instance table.
+
+        :param api_version: API version (if API versioning is enabled).
+        :param **kwargs: All query parameters to the URL.
+        """
+
+        url = self.make_url(api_version, sys_id=sys_id, **kwargs)
+        if verbose:
+            print(url)
+        session = self.get_session(headers)
+
+        response = session.delete(url)
+        self.check_status_code(response, 204)
+        return response.content
 
     def get_session(self, headers):
         """
@@ -115,8 +229,8 @@ class Table:
         s.headers.update(headers)
         return s
 
-    def check_status_code(self, response):
-        if response.status_code != 200:
+    def check_status_code(self, response, expected=200):
+        if response.status_code != expected:
             data = response.json()
             raise StatusCodeError(data["error"]["message"], data["error"]["detail"], response.status_code)
 
@@ -130,13 +244,3 @@ class Table:
         if kwargs:
             url += '?' + '&'.join([ f'{k}={v}' for k, v in kwargs.items() ])
         return url
-
-    def to_dict(self):
-        data_dict = {}
-
-        for key in self.__records[0].keys(): # For each column of the table
-            data_dict[key] = []
-            for row in self.__records:
-                data_dict[key].append(row[key])
-
-        return data_dict

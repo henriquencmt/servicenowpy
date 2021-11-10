@@ -5,8 +5,4 @@ class StatusCodeError(Exception):
         self.status = status
 
     def __str__(self):
-        return f"""
-        Message: {self.message}
-        Detail: {self.detail}
-        Status: {self.status}
-        """
+        return f"\n  Message: {self.message}\n  Detail: {self.detail}\n  Status: {self.status}"

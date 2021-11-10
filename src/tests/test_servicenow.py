@@ -1,5 +1,7 @@
 import unittest
 
+import requests
+
 from .mocks import get_free_port, start_mock_server, read_mock_data
 from servicenowpy import Client, Table, StatusCodeError
 
@@ -55,11 +57,34 @@ class TestTable(unittest.TestCase):
         self.assertEqual(result, read_mock_data(single_record=True))
 
     def test_get_record_by_number(self):
+        number = 'INC0000060'
+        result = self.inc_table.get_record_by_number(number)
+        self.assertEqual(result[0], read_mock_data(single_record=True))
+
+    def test_patch(self):
+        pass
+
+    def test_post(self):
+        number = 'INC0000060'
+        result = self.inc_table.post()
+        self.assertEqual(result[0], read_mock_data(single_record=True))
+
+    def test_put(self):
+        pass
+
+    def test_delete(self):
         pass
 
     def test_get_session(self):
-        pass
+        headers = {"Accept":"application/json"}
+        inc_table = Table('incident', 'instance', ())
+        session = inc_table.get_session(headers)
+        self.assertIsInstance(session, requests.Session)
+        self.assertDictContainsSubset({"Accept":"application/json"}, session.headers)
 
     def test_check_status_code_raises_exception(self):
         self.assertRaises(StatusCodeError, self.bad_table.get)
+
+    def test_make_url(self):
+        pass
         
