@@ -2,8 +2,8 @@ import unittest
 
 import requests
 
-from .mocks import get_free_port, start_mock_server, read_mock_data
 from servicenowpy import Client, Table, StatusCodeError
+
 
 class TestClient(unittest.TestCase):
 
@@ -34,51 +34,62 @@ class TestClient(unittest.TestCase):
 class TestTable(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.mock_server_port = get_free_port()
-        start_mock_server(cls.mock_server_port)
-
-        cls.mock_instance_url = 'http://localhost:{port}/'.format(port=cls.mock_server_port)
-
+        cls.mock_instance_url = 'http://localhost:8000/'
         cls.inc_table = Table('incident', cls.mock_instance_url, ('user', 'pwd'))
-
         cls.bad_table = Table('badtable', cls.mock_instance_url, ('user', 'pwd'))
 
     def test_get(self):
         result = self.inc_table.get()
-        self.assertEqual(result, read_mock_data())
+        self.assertIsInstance(result, list)
     
     def test_get_with_query(self):
         result = self.inc_table.get(sysparm_fields='number,assignment_group')
-        self.assertEqual(result, read_mock_data())
+        self.assertEqual(result, list)
 
     def test_get_record(self):
         sys_id = '001'
         result = self.inc_table.get_record(sys_id)
-        self.assertEqual(result, read_mock_data(single_record=True))
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result['sys_id'], sys_id)
 
     def test_get_record_by_number(self):
-        number = 'INC0000060'
+        number = 'INC0000001'
         result = self.inc_table.get_record_by_number(number)
-        self.assertEqual(result[0], read_mock_data(single_record=True))
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result['number'], number)
 
     def test_patch(self):
-        pass
+        sys_id = '001'
+        data = { "assignment_group": "287ebd7da9fe198100f92cc8d1d2154e" }
+        result = self.inc_table.patch(sys_id, data)
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result['sys_id'], sys_id)
+        self.assertEqual(result['assignment_group'], data['assignment_group'])
 
     def test_post(self):
-        number = 'INC0000060'
-        result = self.inc_table.post()
-        self.assertEqual(result[0], read_mock_data(single_record=True))
+        data = { "assignment_group": "287ebd7da9fe198100f92cc8d1d2154e" }
+        result = self.inc_table.post(data)
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result['assignment_group'], data['assignment_group'])
 
     def test_put(self):
-        pass
+        sys_id = '001'
+        data = { "assignment_group": "287ebd7da9fe198100f92cc8d1d2154e" }
+        result = self.inc_table.put(sys_id, data)
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result['assignment_group'], data['assignment_group'])
 
     def test_delete(self):
-        pass
+        sys_id = '001'
+        result = self.inc_table.put(sys_id)
+        self.assertIsInstance(result, None)
 
     def test_get_session(self):
         headers = {"Accept":"application/json"}
-        inc_table = Table('incident', 'instance', ())
+        sn_client = Client('instance.service-now.com', 'user', 'pwd')
+        inc_table = sn_client.table('incident')
         session = inc_table.get_session(headers)
+
         self.assertIsInstance(session, requests.Session)
         self.assertDictContainsSubset({"Accept":"application/json"}, session.headers)
 
@@ -86,5 +97,8 @@ class TestTable(unittest.TestCase):
         self.assertRaises(StatusCodeError, self.bad_table.get)
 
     def test_make_url(self):
-        pass
-        
+        sn_client('instance.service-now.com', 'user', 'pwd')
+        inc_table = sn_client.table('incident')
+        url = inc_table.make_url()
+        expected = 'https://instance.service-now.com/api/now/table/incident'
+        self.assertEqual(url, expected)

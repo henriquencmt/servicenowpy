@@ -11,7 +11,7 @@ PASSWORD = os.environ['SERVICENOWPY_PASSWORD']
 SKIP_TAGS = os.environ['SERVICENOWPY_SKIP_TAGS']
 
 
-class TestRealServer(TestCase):
+class TestRealAPI(TestCase):
 
     @skipIf('real' in SKIP_TAGS, 'Skipping tests that hit the real API server.')
     def test_request_response(self):
