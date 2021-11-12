@@ -24,3 +24,11 @@ How to retrieve data from incident table with this lib:
 {'number': 'INC0000009', 'short_description': 'Reset my password'}
 {'number': 'INC0009005', 'short_description': 'Need access to the common drive'}
 ```
+
+run $ docker-compose up -d
+
+then run $ docker exec -it servicenowpy bash
+
+to run the tests, run $ python3 -m unittest
+
+to play with this lib, run $ python3, then start using it

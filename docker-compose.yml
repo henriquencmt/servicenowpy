@@ -1,0 +1,34 @@
+services:
+  mock-api:
+    build:
+      dockerfile: ./docker/mock-api.Dockerfile
+      context: .
+    image: servicenowpy/mock-api
+    container_name: mock-api
+    volumes:
+      - ./mock_api:/mock_api
+    ports:
+      - "5000"
+    networks:
+      - dev-network
+
+  servicenowpy:
+    build:
+      dockerfile: ./docker/servicenowpy.Dockerfile
+      context: .
+    image: servicenowpy/servicenowpy
+    container_name: servicenowpy
+    volumes:
+      - ./servicenowpy:/servicenowpy
+    env_file:
+      - ./servicenowpy/.env
+    networks:
+      - dev-network
+    depends_on:
+      - "mock-api"
+    command: ["tail", "-f", "/dev/null"]
+
+
+networks:
+  dev-network:
+    driver: bridge

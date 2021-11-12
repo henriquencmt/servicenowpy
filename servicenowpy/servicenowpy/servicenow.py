@@ -1,3 +1,4 @@
+import json
 import re
 import requests
 
@@ -121,7 +122,7 @@ class Table:
         sys_id: str,
         data: str,
         api_version=None,
-        headers={"Accept":"application/json","Accept":"application/json"},
+        headers={"Accept":"application/json"},
         verbose=False,
         **kwargs
     ):
@@ -137,7 +138,8 @@ class Table:
             print(url)
         session = self.get_session(headers)
 
-        response = session.patch(url, data)
+        req_body = json.dumps(data)
+        response = session.patch(url, req_body)
         self.check_status_code(response)
 
         result = response.json()
@@ -145,9 +147,9 @@ class Table:
 
     def post(
         self,
-        data: str,
+        data: dict,
         api_version=None,
-        headers={"Accept":"application/json","Accept":"application/json"},
+        headers={"Accept":"application/json"},
         verbose=False,
         **kwargs
     ):
@@ -163,7 +165,8 @@ class Table:
             print(url)
         session = self.get_session(headers)
 
-        response = session.post(url, data)
+        req_body = json.dumps(data)
+        response = session.post(url, req_body)
         self.check_status_code(response, 201)
 
         return response.json()['result']
@@ -171,9 +174,9 @@ class Table:
     def put(
         self,
         sys_id: str,
-        data: str,
+        data: dict,
         api_version=None,
-        headers={"Accept":"application/json","Accept":"application/json"},
+        headers={"Accept":"application/json"},
         verbose=False,
         **kwargs
     ):
@@ -189,7 +192,8 @@ class Table:
             print(url)
         session = self.get_session(headers)
 
-        response = session.put(url, data)
+        req_body = json.dumps(data)
+        response = session.put(url, req_body)
         self.check_status_code(response)
 
         result = response.json()
