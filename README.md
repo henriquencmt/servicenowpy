@@ -10,7 +10,9 @@ A library that helps you to get data from ServiceNow's Table API.
 Installation
 ------------
 
-$ pip install servicenowpy
+```shell
+pip install servicenowpy
+```
 
 Simple usage
 ------------
