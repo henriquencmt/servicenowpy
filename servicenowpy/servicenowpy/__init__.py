@@ -1,5 +1,5 @@
 """
-ServiceNowPy library helps you to get data from ServiceNow's Table API.
+servicenowpy, a library that helps you to get data from ServiceNow's Table API
 
 Simple usage:
 

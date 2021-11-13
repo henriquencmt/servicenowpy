@@ -6,14 +6,28 @@ from .exceptions import StatusCodeError
 
 class Client:
     """
-    Represents a ServiceNow's instance.
+    Represents a ServiceNow instance.
+
+    Example
+    -------
+
+    import servicenowpy
+
+    sn_client = servicenowpy.Client('https://dev01234.service-now.com', 'admin', 'secret')
+
+
+    :param instance_url: ServiceNow instance URL.
+    :param user: Instance user.
+    :param pwd: Instance password.
     """
 
-    def __init__(self, instance_url, user, pwd):
+    def __init__(self, instance_url: str, user: str, pwd: str):
         self.__instance_url = self.make_api_url(instance_url)
         self.__credentials = user, pwd
 
     def make_api_url(self, instance_url):
+        """Returns instance URL with '/api/now/' appended."""
+
         m = re.search(r'^https?://', instance_url)
         url = f'https://{instance_url}' if not m else instance_url
         url = url.rstrip('/')
@@ -34,25 +48,41 @@ class Client:
 class Table:
     """
     Represents ServiceNow's Table API.
+
+    Example
+    -------
+
+    from servicenowpy import Client
+
+    sn_client = Client('https://dev01234.service-now.com', 'admin', 'secret')
+    inc_table = sn_client.table('incident')
+    ritm_table = sn_client.table('sc_req_item')
+    
+    :param table: The table name.
+    :param instance_url: ServiceNow instance URL".
+    :param credentials: Tuple containing user and password, respectively.
     """
 
     def __init__(self, table, instance_url, credentials: tuple):
-        """
-        :param table: The table name.
-        :param instance_url: ServiceNow instance URL, with or without "https://".
-        :param credentials: Tuple containing user and password, respectively.
-        """
-
         self.__table = table
         self.__instance_url = instance_url
         self.__credentials = credentials
 
-    def get(self, api_version=None, headers={"Accept":"application/json"}, verbose=False, **kwargs):
+    def get(
+        self,
+        api_version=None,
+        headers={"Accept":"application/json"},
+        verbose=False,
+        **kwargs
+    ):
         """
         Sends a GET request to the instance table.
 
-        :param api_version: API version (if API versioning is enabled).
+        :param api_version: API version, if API versioning is enabled.
+        :param headers: Request headers.
+        :param verbose: If set to True, prints the full URL before it sends the request.
         :param **kwargs: All query parameters to the URL.
+        :rtype: list
         """
 
         url = self.make_url(api_version, **kwargs)
@@ -87,6 +117,17 @@ class Table:
         verbose=False,
         **kwargs
     ):
+        """
+        Sends a GET request to the instance table. Returns only one record, with the given sys_id.
+
+        :param sys_id: Record unique ID.
+        :param api_version: API version, if API versioning is enabled.
+        :param headers: Request headers.
+        :param verbose: If set to True, prints the full URL before it sends the request.
+        :param **kwargs: All query parameters to the URL.
+        :rtype: dict
+        """
+
         url = self.make_url(api_version, sys_id, **kwargs)
         if verbose:
             print(url)
@@ -105,6 +146,17 @@ class Table:
         verbose=False,
         **kwargs
     ):
+        """
+        Sends a GET request to the instance table. Adds 'number' to the query parameters. 
+
+        :param number: Record number.
+        :param api_version: API version, if API versioning is enabled.
+        :param headers: Request headers.
+        :param verbose: If set to True, prints the full URL before it sends the request.
+        :param **kwargs: Other query parameters to the URL.
+        :rtype: list
+        """
+
         url = self.make_url(api_version, **kwargs)
         operator = '&' if kwargs else '?'
         url += f'{operator}number={number}'
@@ -120,7 +172,7 @@ class Table:
     def patch(
         self,
         sys_id: str,
-        data: str,
+        data: dict,
         api_version=None,
         headers={"Accept":"application/json"},
         verbose=False,
@@ -129,8 +181,13 @@ class Table:
         """
         Sends a PATCH request to the instance table.
 
+        :param sys_id: Record unique ID.
+        :param data: Fields and values to update in the record.
         :param api_version: API version (if API versioning is enabled).
+        :param headers: Request headers.
+        :param verbose: If set to True, prints the full URL before it sends the request.
         :param **kwargs: All query parameters to the URL.
+        :rtype: dict
         """
 
         url = self.make_url(api_version, sys_id=sys_id, **kwargs)
@@ -156,8 +213,12 @@ class Table:
         """
         Sends a POST request to the instance table.
 
+        :param data: Fields and values to the new record.
         :param api_version: API version (if API versioning is enabled).
+        :param headers: Request headers.
+        :param verbose: If set to True, prints the full URL before it sends the request.
         :param **kwargs: All query parameters to the URL.
+        :rtype: dict
         """
 
         url = self.make_url(api_version, **kwargs)
@@ -183,8 +244,13 @@ class Table:
         """
         Sends a PUT request to the instance table.
 
+        :param sys_id: Record unique ID.
+        :param data: New values to the record.
         :param api_version: API version (if API versioning is enabled).
+        :param headers: Request headers.
+        :param verbose: If set to True, prints the full URL before it sends the request.
         :param **kwargs: All query parameters to the URL.
+        :rtype: dict
         """
 
         url = self.make_url(api_version, sys_id=sys_id, **kwargs)
@@ -210,7 +276,10 @@ class Table:
         """
         Sends a DELETE request to the instance table.
 
+        :param sys_id: Record unique ID.
         :param api_version: API version (if API versioning is enabled).
+        :param headers: Request headers.
+        :param verbose: If set to True, prints the full URL before it sends the request.
         :param **kwargs: All query parameters to the URL.
         """
 
@@ -226,6 +295,8 @@ class Table:
     def get_session(self, headers):
         """
         Return a requests.Session object.
+
+        :param headers: Request headers.
         """
 
         s = requests.Session()
@@ -233,12 +304,25 @@ class Table:
         s.headers.update(headers)
         return s
 
-    def check_status_code(self, response, expected=200):
+    def check_status_code(self, response: requests.models.Response, expected=200):
+        """
+        Checks if the given response status code is as expected.
+        Raises a StatusCodeError if it is not.
+
+        :param response: Response object.
+        :param expected: Expected status code.
+        """
         if response.status_code != expected:
             data = response.json()
             raise StatusCodeError(data["error"]["message"], data["error"]["detail"], response.status_code)
 
     def make_url(self, api_version=None, sys_id=None, **kwargs):
+        """
+        Returns a complete url to send in the request.
+
+        :rtype: str
+        """
+
         url = self.__instance_url
         if api_version:
             url += f'{api_version}/'

@@ -1,4 +1,6 @@
 class StatusCodeError(Exception):
+    """Exception used when the status code of a http response is not as expected."""
+    
     def __init__(self, message, detail, status):
         self.message = message
         self.detail = detail
