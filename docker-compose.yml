@@ -21,7 +21,7 @@ services:
     volumes:
       - ./servicenowpy:/servicenowpy
     env_file:
-      - ./servicenowpy/.env
+      - .env
     networks:
       - dev-network
     depends_on:
