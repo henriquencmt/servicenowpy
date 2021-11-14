@@ -32,4 +32,4 @@ How to retrieve records from incident table with this lib:
 ```
 _________________
 
-[Further Documentation](https://henriquencmt.github.io/servicenowpy/) | [Github Repository](https://github.com/henriquencmt/servicenowpy/) | [Contributing](https://github.com/henriquencmt/servicenowpy/blob/main/CONTRIBUTING.md)
+[Further Documentation](https://servicenowpy.readthedocs.io/) | [Github Repository](https://github.com/henriquencmt/servicenowpy/) | [Contributing](https://github.com/henriquencmt/servicenowpy/blob/main/CONTRIBUTING.md)
