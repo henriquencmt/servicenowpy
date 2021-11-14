@@ -8,14 +8,6 @@ class Client:
     """
     Represents a ServiceNow instance.
 
-    Example
-    -------
-
-    import servicenowpy
-
-    sn_client = servicenowpy.Client('https://dev01234.service-now.com', 'admin', 'secret')
-
-
     :param instance_url: ServiceNow instance URL.
     :param user: Instance user.
     :param pwd: Instance password.
@@ -25,6 +17,7 @@ class Client:
         self.__instance_url = self.make_api_url(instance_url)
         self.__credentials = user, pwd
 
+
     def make_api_url(self, instance_url):
         """Returns instance URL with '/api/now/' appended."""
 
@@ -33,6 +26,7 @@ class Client:
         url = url.rstrip('/')
         url += '/api/now/'
         return url
+
 
     def table(self, table):
         """
@@ -49,15 +43,6 @@ class Table:
     """
     Represents ServiceNow's Table API.
 
-    Example
-    -------
-
-    from servicenowpy import Client
-
-    sn_client = Client('https://dev01234.service-now.com', 'admin', 'secret')
-    inc_table = sn_client.table('incident')
-    ritm_table = sn_client.table('sc_req_item')
-    
     :param table: The table name.
     :param instance_url: ServiceNow instance URL".
     :param credentials: Tuple containing user and password, respectively.
@@ -294,7 +279,7 @@ class Table:
 
     def get_session(self, headers):
         """
-        Return a requests.Session object.
+        Returns a requests.Session object.
 
         :param headers: Request headers.
         """
