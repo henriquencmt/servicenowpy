@@ -1,3 +1,5 @@
+__version__ = '0.1.0'
+
 """
 servicenowpy, a library that helps you to get data from ServiceNow's Table API
 

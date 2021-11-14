@@ -1,7 +1,0 @@
-[tool.portray]
-modules = ["servicenowpy"]
-
-[tool.portray.mkdocs]
-repo_url = "https://github.com/henriquencmt/servicenowpy/"
-repo_name = "servicenowpy"
-edit_url = "tree/gh-pages/docs"
